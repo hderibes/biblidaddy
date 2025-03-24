@@ -1,10 +1,70 @@
-import { Text, View, TextInput, StyleSheet,Image, FlatList, TouchableOpacity,StatusBar } from 'react-native';import { Ionicons } from "@expo/vector-icons";
+import { Text, View, TextInput, StyleSheet,Image, FlatList, TouchableOpacity,StatusBar,SectionList } from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView, SafeAreaProvider} from "react-native-safe-area-context";
 import { Dropdown } from 'react-native-element-dropdown';
 import React, { useState } from 'react';
 import { Drawer } from 'react-native-drawer-layout';
-import { Button } from '@react-navigation/elements';
 import AntDesign from '@expo/vector-icons/AntDesign';
+
+
+const Data = [
+  {
+    id: '1',
+    Titre: 'Titre 1 : je suis un long titre',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 1',
+    Date:'1990',
+    Genre:'Roman',
+  },
+  {
+    id: '2',
+    Titre: 'Titre 2: je suis un très très long titre de livre',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 2',
+    Date:'1990',
+    Genre:'Roman',
+  },
+  {
+    id: '3',
+    Titre: 'Titre 3: je suis un très très bon livre',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 3',
+    Date:'1990',
+    Genre:'Roman',
+  },
+  {
+    id: '4',
+    Titre: 'Titre 4',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 4',
+    Date:'1990',
+    Genre:'Roman',
+  },
+  {
+    id: '5',
+    Titre: 'Titre 5',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 5',
+    Date:'1990',
+    Genre:'Bande Dessinée',
+  },
+  {
+    id: '6',
+    Titre: 'Titre 6',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 6',
+    Date:'2005',
+    Genre:'Bande Dessinée',
+  },
+  {
+    id: '7',
+    Titre: 'Titre 7',
+    url_cover: '../../assets/images/Couverture.png',
+    Auteur: 'Auteur 7',
+    Date:'2007',
+    Genre:'Bande Dessinée',
+  }
+];
 
 const filtres = [
   { label: 'Recherche', value: 'Recherche' },
@@ -13,7 +73,41 @@ const filtres = [
   { label: 'Filtre 4', value: 'Année' },
 
 ];
-
+const genres = [
+  {
+    title:'Romans',
+    data:[{
+      key: 1,
+      genre:'Roman',
+    }]},
+  {
+    title:'Bandes Dessinées',
+    data:[{
+      key: 2,
+      genre:'Bande Dessinée',
+    }]
+  },    
+]
+const ItemBis = ({item, onPress} : {item:any, onPress:any}) =>(
+  <TouchableOpacity
+    style = {{
+      flex:1,
+      //height:80,
+    }}
+    onPress={onPress}
+    >
+       
+      <View style={styles.itembis}>
+        <Image
+            style={styles.couverturebis}
+            source={require('../../assets/images/Couverture.png')}
+        />
+        <View style={styles.overlay}>
+            <Text style={styles.titlebis}>{item.Titre}</Text>
+        </View>
+      </View>
+  </TouchableOpacity>
+);
 
 const Item = ({title, auteur, date, onPress } : {title:any, auteur:any, date:any, onPress:any}) => (
   <TouchableOpacity
@@ -47,43 +141,6 @@ const ItemDrawer = ({item}: {item:any}) => (
     <Text style={styles.title}>{item.Date}</Text>
   </View>
 );
-const Data = [
-  {
-    id: '1',
-    Titre: 'Titre 1 : je suis un long titre',
-    url_cover: '../../assets/images/Couverture.png',
-    Auteur: 'Auteur 1',
-    Date:'1990'
-  },
-  {
-    id: '2',
-    Titre: 'Titre 2: je suis un très très long titre de livre',
-    url_cover: '../../assets/images/Couverture.png',
-    Auteur: 'Auteur 2',
-    Date:'1990'
-  },
-  {
-    id: '3',
-    Titre: 'Titre 3: je suis un très très bon livre',
-    url_cover: '../../assets/images/Couverture.png',
-    Auteur: 'Auteur 3',
-    Date:'1990'
-  },
-  {
-    id: '4',
-    Titre: 'Titre 4',
-    url_cover: '../../assets/images/Couverture.png',
-    Auteur: 'Auteur 4',
-    Date:'1990'
-  },
-  {
-    id: '5',
-    Titre: 'Titre 5',
-    url_cover: '../../assets/images/Couverture.png',
-    Auteur: 'Auteur 5',
-    Date:'1990'
-  }
-];
 
 function ModeDropdown({ DropdownValue } : {DropdownValue:any}) {
   const [open, setOpen] = React.useState(false);
@@ -123,8 +180,7 @@ function ModeDropdown({ DropdownValue } : {DropdownValue:any}) {
           />}
         keyExtractor={(item) => item.id}
       />
-      </Drawer>
-          
+      </Drawer>    
     );
   }
   if (DropdownValue == 'Categorie'){
@@ -137,19 +193,28 @@ function ModeDropdown({ DropdownValue } : {DropdownValue:any}) {
           return <Text>Drawer content</Text>;
         }}
         >
-        <Button
-        onPress={() => setOpen((prevOpen) => !prevOpen)}
-        //title={`${open ? 'Close' : 'Open'} drawer`}
-        />
-        <FlatList
-          data={Data}
-          renderItem={({item}) =>
-            <Item
-              onPress={() => setOpen((prevOpen) => !prevOpen)} // Ouvre le drawer
-              title={item.Titre} auteur={item.Auteur} date={item.Date}
-              />}
-          keyExtractor={(item) => item.id}
-        />
+        <SectionList
+          contentContainerStyle={{ paddingHorizontal: 10 }}
+          stickySectionHeadersEnabled={false}
+          sections={genres}
+          renderSectionHeader={({ section }) => (
+            <>
+            <Text style={{color:'white', fontSize: 30}}>{section.title}</Text>
+            <FlatList
+              horizontal
+              data={Data.filter(item => item.Genre == section.data[0].genre)}
+              renderItem={({item}) =>
+                <ItemBis
+                  onPress={() => setOpen((prevOpen) => !prevOpen)} // Ouvre le drawer
+                  item={item}
+                />}
+                showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+            />
+            </>
+          )}
+          renderItem={() => null}
+        /> 
         </Drawer>
       );
   }
@@ -302,5 +367,31 @@ const styles = StyleSheet.create({
     paddingLeft:10,    
     color: 'grey',
     backgroundColor:'white',
-  }
+  },
+  itembis: {
+    backgroundColor: '#f9c2ff',
+    marginHorizontal: 10,
+    width:130,
+   // justifyContent:'flex-start',
+    height:180,
+  },
+  titlebis: {
+    fontSize:15,
+    fontWeight:'bold',
+    color:'white',
+  },
+  couverturebis: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 0, // Place le texte en bas de l'image
+    width: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Noir transparent
+    paddingVertical: 10, // Un peu d'espace autour du texte
+    alignItems: 'center', // Centre le texte horizontalement
+  },
+
 });
