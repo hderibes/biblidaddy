@@ -2,23 +2,26 @@ import { Text, View, TextInput, StyleSheet,Image, FlatList, TouchableOpacity,Sta
 import { SafeAreaView, SafeAreaProvider} from "react-native-safe-area-context";
 import { Dropdown } from 'react-native-element-dropdown';
 import React, { useState } from 'react';
+import { Drawer } from 'react-native-drawer-layout';
+import { Button } from '@react-navigation/elements';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const filtres = [
   { label: 'Recherche', value: 'Recherche' },
-  { label: 'Catégorie', value: 'Catégorie' },
+  { label: 'Catégorie', value: 'Categorie' },
   { label: 'Filtre 3', value: 'Tags' },
   { label: 'Filtre 4', value: 'Année' },
 
 ];
 
 
-const Item = ({title, auteur, date} : {title:any, auteur:any, date:any}) => (
+const Item = ({title, auteur, date, onPress } : {title:any, auteur:any, date:any, onPress:any}) => (
   <TouchableOpacity
     style = {{
       flex:1,
-      maxHeight:'150',
+      maxHeight:150,
     }}
+    onPress={onPress}
     >
   <View style={styles.item}>
     <Image
@@ -37,7 +40,13 @@ const Item = ({title, auteur, date} : {title:any, auteur:any, date:any}) => (
   </View>
   </TouchableOpacity>
 );
-
+const ItemDrawer = ({item}: {item:any}) => (
+  <View>
+    <Text style={styles.title}>{item.Titre}</Text>
+    <Text style={styles.title}>{item.Auteur}</Text>
+    <Text style={styles.title}>{item.Date}</Text>
+  </View>
+);
 const Data = [
   {
     id: '1',
@@ -76,10 +85,24 @@ const Data = [
   }
 ];
 
-function ModeDropdown({ name, DropdownValue } : { name:any, DropdownValue:any}) {
+function ModeDropdown({ DropdownValue } : {DropdownValue:any}) {
+  const [open, setOpen] = React.useState(false);
+  const [itemDrawer, setItemDrawer] = React.useState(Data[0]);
   if (DropdownValue == 'Recherche') {
     return(
-    <View>
+      <Drawer
+        open={open}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        drawerPosition='right'
+        renderDrawerContent={() => {
+          return (
+            <ItemDrawer
+              item = {itemDrawer}
+            />
+          );
+        }}>
+
       <View style={styles.containerSearchBar}>
         <View style={styles.containerIcon}>
           <Ionicons name="search" size={30}/>
@@ -90,17 +113,44 @@ function ModeDropdown({ name, DropdownValue } : { name:any, DropdownValue:any}) 
       </View>
       <FlatList
         data={Data}
-        renderItem={({item}) => <Item title={item.Titre} auteur={item.Auteur} date={item.Date} />}
+        renderItem={({item}) =>
+          <Item
+            onPress={() => {
+              setOpen((prevOpen) => !prevOpen); //ouvre le Drawer
+              setItemDrawer(() => item);
+            }}
+            title={item.Titre} auteur={item.Auteur} date={item.Date}
+          />}
         keyExtractor={(item) => item.id}
       />
-      </View>
+      </Drawer>
           
     );
   }
   if (DropdownValue == 'Categorie'){
     return(
-      
-      <Text>{name}</Text>
+      <Drawer
+        open={open}
+        onOpen={() => setOpen(true)}
+        onClose={() => setOpen(false)}
+        renderDrawerContent={() => {
+          return <Text>Drawer content</Text>;
+        }}
+        >
+        <Button
+        onPress={() => setOpen((prevOpen) => !prevOpen)}
+        //title={`${open ? 'Close' : 'Open'} drawer`}
+        />
+        <FlatList
+          data={Data}
+          renderItem={({item}) =>
+            <Item
+              onPress={() => setOpen((prevOpen) => !prevOpen)} // Ouvre le drawer
+              title={item.Titre} auteur={item.Auteur} date={item.Date}
+              />}
+          keyExtractor={(item) => item.id}
+        />
+        </Drawer>
       );
   }
   
@@ -109,6 +159,7 @@ function ModeDropdown({ name, DropdownValue } : { name:any, DropdownValue:any}) 
 export default function LivresScreen() {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+
 
   const renderLabel = () => {
     if (value || isFocus) {
@@ -123,6 +174,7 @@ export default function LivresScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
+        
       <Dropdown
           style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
           placeholderStyle={styles.placeholderStyle}
@@ -154,7 +206,6 @@ export default function LivresScreen() {
         />
         <ModeDropdown
           DropdownValue={value}
-          name="Combinaison spatiale"
         />
       </SafeAreaView>
     </SafeAreaProvider>
