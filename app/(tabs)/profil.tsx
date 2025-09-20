@@ -3,5 +3,9 @@ import{Link} from "expo-router"
 import { Redirect } from "expo-router";
 
 export default function Index() {
-  return <Redirect href="/livres" />;
+  return (
+    <View>
+        <Text>TEST</Text>
+    </View>
+  );
 }

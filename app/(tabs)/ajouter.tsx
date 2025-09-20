@@ -4,7 +4,8 @@ import { useState, useEffect  } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { navigate } from 'expo-router/build/global-state/routing';
 import { Link, router} from 'expo-router';
-
+import { Dimensions } from 'react-native';
+const screenWidth = Dimensions.get('window').width;
 
 //https://data.bnf.fr/sparql/
 //https://www.data.gouv.fr/fr/dataservices/api-sparql-de-la-bnf-data-bnf-fr/
@@ -90,7 +91,7 @@ export default function AjoutScreen() {
         {scanned && (
           <TouchableOpacity
           onPress={() =>{
-            setScanning('Scanner un code barre');
+            setScanning('Scan auto en cours ...');
             setScanned(false);
           }}
           style={styles.scan_again}>
@@ -102,7 +103,7 @@ export default function AjoutScreen() {
         <TouchableOpacity
           onPress={Ajouter_manuellement}
           style={styles.roundButton}>
-          <Ionicons name={'hand-left'} size={28} color={'white'} />
+          <Ionicons name={'open-outline'} size={28} color={'white'} />
           <Text style={{paddingTop: 6, color:'white', fontSize: 9, textAlign: 'center'}}>Ajouter à la main</Text>
         </TouchableOpacity>
         </Link>
@@ -127,9 +128,8 @@ const styles = StyleSheet.create({
   button_container:{
     flexDirection:"row",
     position:'absolute',
-    bottom:15,
-    right:15,
-
+    bottom:70,
+    marginLeft: (screenWidth/2)-80,
   },
   roundButton:{
     width: 80,
@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 100,
-    backgroundColor: '#1B2430',
+    borderRadius: 10,
+    backgroundColor: '#254b7f',
   },
   scan_again:{
     width: 80,
@@ -146,8 +146,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 100,
-    backgroundColor: '#1B2430',
+    borderRadius: 10,
+    backgroundColor: '#254b7f',
     marginRight:10
   }
 });

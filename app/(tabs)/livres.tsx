@@ -5,6 +5,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import React, { useState } from 'react';
 import { Drawer } from 'react-native-drawer-layout';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import {ScrollView} from  "react-native";
 
 
 const Data = [
@@ -68,10 +69,9 @@ const Data = [
 
 const filtres = [
   { label: 'Recherche', value: 'Recherche' },
-  { label: 'Catégorie', value: 'Categorie' },
-  { label: 'Filtre 3', value: 'Tags' },
-  { label: 'Filtre 4', value: 'Année' },
-
+  { label: 'Catégories', value: 'Categories' },
+  { label: 'Etagères', value: 'Etageres' },
+  { label: 'Tags', value: 'Tags' },
 ];
 const genres = [
   {
@@ -113,7 +113,7 @@ const Item = ({title, auteur, date, onPress } : {title:any, auteur:any, date:any
   <TouchableOpacity
     style = {{
       flex:1,
-      maxHeight:150,
+      maxHeight:200,
     }}
     onPress={onPress}
     >
@@ -125,7 +125,7 @@ const Item = ({title, auteur, date, onPress } : {title:any, auteur:any, date:any
     <View style={{
       justifyContent: 'center',
       alignSelf:'flex-start',
-      width:'63%',
+      flex:1,
       }}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.auteur}>{auteur}</Text>
@@ -142,87 +142,123 @@ const ItemDrawer = ({item}: {item:any}) => (
   </View>
 );
 
-function ModeDropdown({ DropdownValue } : {DropdownValue:any}) {
+
+function HorizontalMenu({filtres, value, setValue } : {filtres:any, value:any, setValue:any}) {
+  return (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={{ marginVertical: 10 }}
+    >
+      {filtres.map((item) => {
+        const selected = value === item.value;
+        return (
+          <TouchableOpacity
+            key={item.value}
+            onPress={() => setValue(item.value)}
+            style={{
+              paddingVertical: 8,
+              paddingHorizontal: 15,
+              borderRadius: 20,
+              marginRight: 10,
+              borderWidth: 1,
+              borderColor: selected ? '#254b7f' : "#254b7f",
+              backgroundColor: selected ? '#254b7f' : "white",
+            }}
+          >
+            <Text style={{ fontSize: 11, fontWeight: 'bold',color: selected ? "white" : "black" }}>
+              {item.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+
+function ModeDropdown({ DropdownValue }: { DropdownValue: any }) {
   const [open, setOpen] = React.useState(false);
   const [itemDrawer, setItemDrawer] = React.useState(Data[0]);
-  if (DropdownValue == 'Recherche') {
-    return(
-      <Drawer
-        open={open}
-        onOpen={() => setOpen(true)}
-        onClose={() => setOpen(false)}
-        drawerPosition='right'
-        renderDrawerContent={() => {
-          return (
-            <ItemDrawer
-              item = {itemDrawer}
-            />
-          );
-        }}>
 
-      <View style={styles.containerSearchBar}>
-        <View style={styles.containerIcon}>
-          <Ionicons name="search" size={30}/>
-        </View>
-        <TextInput
-          //onChangeText={(search) => this.setState({search})}
-          style={styles.searchBar}/>
-      </View>
-      <FlatList
-        data={Data}
-        renderItem={({item}) =>
-          <Item
-            onPress={() => {
-              setOpen((prevOpen) => !prevOpen); //ouvre le Drawer
-              setItemDrawer(() => item);
-            }}
-            title={item.Titre} auteur={item.Auteur} date={item.Date}
-          />}
-        keyExtractor={(item) => item.id}
-      />
-      </Drawer>    
-    );
-  }
-  if (DropdownValue == 'Categorie'){
-    return(
-      <Drawer
-        open={open}
-        onOpen={() => setOpen(true)}
-        onClose={() => setOpen(false)}
-        renderDrawerContent={() => {
-          return <Text>Drawer content</Text>;
-        }}
-        >
+  return (
+    <Drawer
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
+      drawerPosition="right"
+      renderDrawerContent={() => {
+        if (DropdownValue === "Recherche") {
+          return <ItemDrawer item={itemDrawer} />;
+        }
+        if (DropdownValue === "Categories") {
+          return <ItemDrawer item={itemDrawer} />;
+        }
+        return null;
+      }}
+    >
+      {DropdownValue === "Recherche" && (
+        <>
+          <View style={styles.containerSearchBar}>
+            <View style={styles.containerIcon}>
+              <Ionicons name="search" size={30} />
+            </View>
+            <TextInput style={styles.searchBar} />
+          </View>
+          <FlatList
+            data={Data}
+            renderItem={({ item }) => (
+              <Item
+                onPress={() => {
+                  setOpen(true); // ouvre le Drawer
+                  setItemDrawer(item);
+                }}
+                title={item.Titre}
+                auteur={item.Auteur}
+                date={item.Date}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+          />
+        </>
+      )}
+
+      {DropdownValue === "Categories" && (
         <SectionList
-          contentContainerStyle={{ paddingHorizontal: 10 }}
+          contentContainerStyle={{ paddingHorizontal: 10,}}
           stickySectionHeadersEnabled={false}
           sections={genres}
           renderSectionHeader={({ section }) => (
-            <>
-            <Text style={{color:'white', fontSize: 30}}>{section.title}</Text>
-            <FlatList
-              horizontal
-              data={Data.filter(item => item.Genre == section.data[0].genre)}
-              renderItem={({item}) =>
-                <ItemBis
-                  onPress={() => setOpen((prevOpen) => !prevOpen)} // Ouvre le drawer
-                  item={item}
-                />}
+            
+            <View style={styles.ligneCategorie}>
+              <Text style={styles.categorie}>
+                {section.title}
+              </Text>
+              <FlatList
+                horizontal
+                data={Data.filter(
+                  (item) => item.Genre == section.data[0].genre
+                )}
+                renderItem={({ item }) => (
+                  <ItemBis
+                    onPress={() => setOpen(true)} // ouvre le Drawer
+                    item={item}
+                  />
+                )}
                 showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.id}
-            />
-            </>
+                keyExtractor={(item) => item.id}
+              />
+            </View>
           )}
           renderItem={() => null}
-        /> 
-        </Drawer>
-      );
-  }
-  
+        />
+      )}
+    </Drawer>
+  );
 }
 
 export default function LivresScreen() {
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState(filtres[0]?.value || null);
   const [isFocus, setIsFocus] = useState(false);
 
 
@@ -239,36 +275,11 @@ export default function LivresScreen() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.container}>
-        
-      <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={filtres}
-          //search
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? 'Select item' : '...'}
-          searchPlaceholder="Search..."
-          value={value}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setValue(item.value);
-            setIsFocus(false);
-          }}
-          /*renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              color={isFocus ? 'blue' : 'black'}
-              name="Safety"
-              size={20}
-            />
-          )}*/
-        />
+      <View style={{paddingLeft : 10,}}>
+
+        <HorizontalMenu filtres={filtres} value={value} setValue={setValue} />  
+      </View>
+     
         <ModeDropdown
           DropdownValue={value}
         />
@@ -279,7 +290,7 @@ export default function LivresScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#000000',
+    backgroundColor: 'white',
     flex: 1,
     //paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
@@ -333,52 +344,72 @@ const styles = StyleSheet.create({
     //display: 'flex',
     alignItems: 'center',
     flexDirection: 'row',
+    borderColor:'#254b7f',
+    borderWidth:1,
   },
   containerIcon:{
     marginLeft:10,
     flex:1,
   },
   item: {
-    backgroundColor: '#f9c2ff',
-    padding: 10,
-    marginHorizontal: 16,
+    backgroundColor: 'white',
+    padding: 9,
+    marginHorizontal: 8,
+    marginTop:8,
     flexDirection: 'row',
-    width:'100%',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3, // Pour Android
   },
   title: {
     backgroundColor:'white',
-    paddingLeft: 10,
     fontSize:20,
+    fontWeight:'bold',
     color:'black',
   },
   couverture: {
-    width:100,
-    height: 120,
+    width:140,
+    height: 160,
     resizeMode: 'contain',
   },
   auteur:{
     fontSize: 15,
-    paddingLeft:10,    
-    color: 'blue',
+    color: 'black',
     backgroundColor:'white',
+
   },
   date:{
-    fontSize: 12,
-    paddingLeft:10,    
-    color: 'grey',
+    fontSize: 15,
+    color: '#333333',
     backgroundColor:'white',
   },
+  ligneCategorie:{
+    paddingHorizontal:8,
+    paddingBottom:8,
+    marginBottom:8,
+    backgroundColor: 'white',
+    borderRadius:10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3, // Pour Android
+
+  },
   itembis: {
-    backgroundColor: '#f9c2ff',
+    backgroundColor: 'white',
     marginHorizontal: 10,
-    width:130,
-   // justifyContent:'flex-start',
-    height:180,
+    width:180,
+    height:250,
   },
   titlebis: {
     fontSize:15,
     fontWeight:'bold',
-    color:'white',
+    color:'black',
+    marginHorizontal:8,
   },
   couverturebis: {
     width: '100%',
@@ -389,9 +420,14 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0, // Place le texte en bas de l'image
     width: '100%',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Noir transparent
+    backgroundColor: 'rgba(186, 203, 230, 0.65)', // Noir transparent
     paddingVertical: 10, // Un peu d'espace autour du texte
     alignItems: 'center', // Centre le texte horizontalement
   },
-
+  categorie: {
+    fontSize: 20,
+    color:'#254b7f',
+    fontWeight:'500',
+    marginBottom:8,
+  },
 });
