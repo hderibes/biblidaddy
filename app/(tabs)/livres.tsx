@@ -152,21 +152,23 @@ function HorizontalMenu({filtres, value, setValue } : {filtres:any, value:any, s
     >
       {filtres.map((item) => {
         const selected = value === item.value;
+        
         return (
           <TouchableOpacity
             key={item.value}
             onPress={() => setValue(item.value)}
+            activeOpacity={1} 
             style={{
               paddingVertical: 8,
               paddingHorizontal: 15,
               borderRadius: 20,
               marginRight: 10,
               borderWidth: 1,
-              borderColor: selected ? '#254b7f' : "#254b7f",
-              backgroundColor: selected ? '#254b7f' : "white",
+              borderColor: selected ? 'rgba(37, 75, 127, 1)': 'rgba(37, 75, 127, 1)',
+              backgroundColor: selected ? 'rgba(37, 75, 127, 1)' : 'white',
             }}
           >
-            <Text style={{ fontSize: 11, fontWeight: 'bold',color: selected ? "white" : "black" }}>
+            <Text style={{ fontSize: 11, fontWeight: 'bold',color: selected ? 'white' : 'black' }}>
               {item.label}
             </Text>
           </TouchableOpacity>

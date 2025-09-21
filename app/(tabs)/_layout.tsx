@@ -3,12 +3,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { Dimensions } from 'react-native';
 const screenWidth = Dimensions.get('window').width;
 import { useNavigationState } from "@react-navigation/native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function TabsLayout() {
   const pathname = usePathname();
   const isAjouterActive = pathname.startsWith("/ajouter");
 
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <Tabs screenOptions={{
       tabBarActiveTintColor: "#000000",
       tabBarStyle: {
@@ -67,5 +69,6 @@ export default function TabsLayout() {
         }}
       />
     </Tabs>
+    </SafeAreaView>
   );
 }
